@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Manager Pro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== MAIN MENU STYLES ===== */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(7, 13, 9, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-ball {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #e53935, #8b0000);
+            box-shadow: 0 0 20px rgba(229, 57, 53, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: floatBall 4s ease-in-out infinite;
+        }
+
+        .logo-ball::before {
+            content: '';
+            position: absolute;
+            width: 46px; height: 2px;
+            background: rgba(255,255,255,0.3);
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 2px;
+        }
+
+        @keyframes floatBall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .logo-text h1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--accent-green), #81c784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .version-badge {
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 230, 118, 0.08);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            border-radius: 20px;
+            font-size: 0.72rem;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 0;
+            overflow: hidden;   /* contain children so each panel scrolls independently */
+        }
+
+        /* Left: Menu */
+        .menu-section {
+            padding: 2rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .menu-tagline {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-tagline .badge {
+            font-size: 0.7rem;
+        }
+
+        .menu-headline {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin: 0.75rem 0 0.5rem;
+        }
+
+        .menu-headline span {
+            background: linear-gradient(135deg, var(--accent-green), #81c784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .menu-sub {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 480px;
+        }
+
+        /* Menu Cards Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+        }
+
+        .menu-card {
+            position: relative;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: var(--card-accent, var(--accent-green));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .menu-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-3px);
+            background: var(--bg-card-hover);
+        }
+
+        .menu-card:hover::before { opacity: 1; }
+
+        .menu-card.featured {
+            grid-column: span 2;
+            flex-direction: row;
+            align-items: center;
+            gap: 1.5rem;
+            --card-accent: var(--accent-green);
+        }
+
+        .menu-card-icon {
+            font-size: 2rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .menu-card-featured-icon {
+            width: 64px; height: 64px;
+            border-radius: var(--radius);
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .menu-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.15rem;
+        }
+
+        .menu-card-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .menu-card-arrow {
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .menu-card:hover .menu-card-arrow {
+            color: var(--accent-green);
+            transform: translateX(4px);
+        }
+
+        /* Individual card accents */
+        .menu-card[data-accent="gold"] { --card-accent: var(--accent-gold); }
+        .menu-card[data-accent="blue"] { --card-accent: var(--accent-blue); }
+        .menu-card[data-accent="orange"] { --card-accent: var(--accent-orange); }
+        .menu-card[data-accent="red"] { --card-accent: var(--accent-red); }
+
+        /* ===== RIGHT PANEL ===== */
+        .side-panel {
+            border-left: 1px solid var(--border);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: rgba(12, 21, 16, 0.6);
+            overflow-y: auto;
+        }
+
+        .side-section-title {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* World Rankings Mini */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .ranking-item:hover { border-color: var(--border-bright); }
+
+        .rank-no {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            width: 18px;
+        }
+
+        .rank-no.top { color: var(--accent-gold); }
+
+        .rank-flag { font-size: 1.2rem; }
+
+        .rank-name {
+            flex: 1;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .rank-rating {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Current Fixtures */
+        .fixture-card {
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .fixture-card:hover { border-color: var(--border-bright); }
+
+        .fixture-teams {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .fixture-team {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+        }
+
+        .fixture-info {
+            text-align: right;
+        }
+
+        .fixture-format {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .fixture-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Tip of the Day */
+        .tip-card {
+            padding: 1rem;
+            background: rgba(0, 230, 118, 0.06);
+            border: 1px solid rgba(0, 230, 118, 0.15);
+            border-radius: var(--radius-sm);
+        }
+
+        .tip-card .tip-icon { font-size: 1.2rem; margin-bottom: 0.4rem; }
+        .tip-card p { font-size: 0.82rem; color: var(--text-secondary); margin: 0; }
+
+        /* ===== BOTTOM BAR ===== */
+        .bottom-bar {
+            padding: 0.75rem 2rem;
+            background: rgba(7, 13, 9, 0.9);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            display: inline-block;
+            margin-right: 0.4rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (max-width: 900px) {
+            .main-content { grid-template-columns: 1fr; }
+            .side-panel { display: none; }
+            .menu-headline { font-size: 2rem; }
+            .menu-grid { max-width: 100%; }
+        }
+        @media (max-width: 500px) {
+            .menu-grid { grid-template-columns: 1fr; }
+            .menu-card.featured { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animated"></div>
+
+    <div class="hero">
+        <!-- TOP BAR -->
+        <div class="top-bar">
+            <div class="logo-area">
+                <div class="logo-ball"></div>
+                <div class="logo-text">
+                    <h1>CRICKET MANAGER</h1>
+                    <p>Pro Edition</p>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <span class="version-badge">v1.0.0</span>
+                <button class="btn btn-ghost btn-sm">⚙ Settings</button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- LEFT: MENU -->
+            <div class="menu-section fade-in">
+                <div class="menu-tagline">
+                    <span class="badge badge-green">🏏 Live Now</span>
+                </div>
+                <h2 class="menu-headline">Your Cricket<br><span>Empire Awaits</span></h2>
+                <p class="menu-sub">Select your players, set your strategy, and simulate ball-by-ball cricket action. Manage tournaments, build dynasties.</p>
+
+                <div class="menu-grid">
+                    <!-- Quick Play -->
+                    <a href="pages/quick-play.html" class="menu-card featured">
+                        <div class="menu-card-featured-icon">⚡</div>
+                        <div style="flex:1">
+                            <div class="menu-card-title">Quick Play</div>
+                            <p class="menu-card-desc">Jump straight into a match. Choose teams, format, and start simulating immediately.</p>
+                        </div>
+                        <span class="menu-card-arrow">›</span>
+                    </a>
+
+                    <!-- Tournaments -->
+                    <a href="pages/tournaments.html" class="menu-card" data-accent="gold">
+                        <div class="menu-card-icon">🏆</div>
+                        <div class="menu-card-title">Tournaments</div>
+                        <p class="menu-card-desc">ICC WC, T20 WC, IPL, WTC & more.</p>
+                    </a>
+
+                    <!-- My Team -->
+                    <a href="pages/my-team.html" class="menu-card" data-accent="blue">
+                        <div class="menu-card-icon">👥</div>
+                        <div class="menu-card-title">My Team</div>
+                        <p class="menu-card-desc">Manage your squad & lineup.</p>
+                    </a>
+
+                    <!-- Career Mode -->
+                    <a href="pages/career.html" class="menu-card" data-accent="orange">
+                        <div class="menu-card-icon">🎯</div>
+                        <div class="menu-card-title">Career Mode</div>
+                        <p class="menu-card-desc">Long-term management journey.</p>
+                    </a>
+
+                    <!-- Stats & Records -->
+                    <a href="pages/stats.html" class="menu-card" data-accent="red">
+                        <div class="menu-card-icon">📊</div>
+                        <div class="menu-card-title">Stats & Records</div>
+                        <p class="menu-card-desc">Player records & leaderboards.</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT: SIDE PANEL -->
+            <div class="side-panel fade-in">
+
+                <!-- ICC Rankings -->
+                <div>
+                    <div class="side-section-title">🌍 ICC ODI Rankings</div>
+                    <div class="ranking-list">
+                        <div class="ranking-item">
+                            <span class="rank-no top">1</span>
+                            <span class="rank-flag">🇦🇺</span>
+                            <span class="rank-name">Australia</span>
+                            <span class="rank-rating">122</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank-no top">2</span>
+                            <span class="rank-flag">🇮🇳</span>
+                            <span class="rank-name">India</span>
+                            <span class="rank-rating">118</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank-no top">3</span>
+                            <span class="rank-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+                            <span class="rank-name">England</span>
+                            <span class="rank-rating">115</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank-no">4</span>
+                            <span class="rank-flag">🇿🇦</span>
+                            <span class="rank-name">South Africa</span>
+                            <span class="rank-rating">108</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank-no">5</span>
+                            <span class="rank-flag">🇵🇰</span>
+                            <span class="rank-name">Pakistan</span>
+                            <span class="rank-rating">104</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank-no">6</span>
+                            <span class="rank-flag">🇳🇿</span>
+                            <span class="rank-name">New Zealand</span>
+                            <span class="rank-rating">99</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Active Tournaments -->
+                <div>
+                    <div class="side-section-title">🏆 My Active Tournaments</div>
+                    <div id="activeTournamentsEl"></div>
+                </div>
+
+                <!-- Recent Matches -->
+                <div>
+                    <div class="side-section-title">📋 Recent Matches</div>
+                    <div id="recentMatchesEl"></div>
+                </div>
+
+                <!-- Tip of the Day -->
+                <div class="tip-card">
+                    <div class="tip-icon">💡</div>
+                    <p id="tipText"><strong style="color:var(--accent-green)">Tip:</strong> Loading tip...</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div>
+                    <div class="side-section-title">🏏 Did You Know</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+                        <div style="padding:0.75rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center">
+                            <div style="font-size:1.4rem;font-weight:800;color:var(--accent-green)">400+</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted)">Players in DB</div>
+                        </div>
+                        <div style="padding:0.75rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center">
+                            <div style="font-size:1.4rem;font-weight:800;color:var(--accent-gold)">12+</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted)">Tournaments</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <div class="bottom-bar">
+            <div><span class="status-dot"></span>Cricket Manager Pro — All systems ready</div>
+            <div>Made with ❤️ for cricket fans</div>
+        </div>
+    </div>
+
+    <script>
+        // Menu card hover effects
+        document.querySelectorAll('.menu-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.boxShadow = '0 8px 30px rgba(0,0,0,0.3)');
+            card.addEventListener('mouseleave', () => card.style.boxShadow = '');
+        });
+
+        // Coming soon pages
+        document.querySelectorAll('a[href*="my-team"], a[href*="career"], a[href*="stats"]').forEach(link => {
+            link.addEventListener('click', e => { e.preventDefault(); alert('Coming soon!'); });
+        });
+
+        // ===== ACTIVE TOURNAMENTS from localStorage =====
+        function renderActiveTournaments() {
+            const el = document.getElementById('activeTournamentsEl');
+            let tours = [];
+            try { tours = JSON.parse(localStorage.getItem('cmp_activeTournaments') || '[]'); } catch(e) {}
+
+            if (!tours.length) {
+                el.innerHTML = `<div style="padding:1rem;background:var(--bg-secondary);border:1px dashed var(--border);border-radius:var(--radius-sm);text-align:center">
+                    <div style="font-size:1.3rem;margin-bottom:0.3rem">🏟️</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)">No active tournaments.</div>
+                    <a href="pages/tournaments.html" style="font-size:0.75rem;color:var(--accent-green);text-decoration:none;margin-top:0.2rem;display:block">Browse tournaments →</a>
+                </div>`;
+                return;
+            }
+
+            el.innerHTML = tours.map(t => {
+                const played = t.matchesPlayed || 0;
+                const won    = t.matchesWon    || 0;
+                const lost   = played - won;
+                const teamLabel = t.userTeamName
+                    ? `${t.userTeamFlag || ''} ${t.userTeamName}`
+                    : (t.userTeam ? t.userTeam : '—');
+                const lastResultBadge = t.lastResult
+                    ? `<span style="font-size:0.62rem;font-weight:700;color:${t.lastResult==='won'?'var(--accent-green)':'var(--accent-red)'}">${t.lastResult==='won'?'W':'L'} vs ${t.lastOpponent||''}</span>`
+                    : `<span class="badge badge-gold" style="font-size:0.62rem">Group Stage</span>`;
+                return `<div class="fixture-card" style="flex-direction:column;gap:0.3rem;margin-bottom:0.4rem;cursor:pointer"
+                    onclick="window.location.href='pages/tournament-play.html?id=${t.id}'">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div style="font-size:0.82rem;font-weight:700">${t.emblem||'🏆'} ${t.name}</div>
+                        ${lastResultBadge}
+                    </div>
+                    <div style="font-size:0.75rem;color:var(--text-muted)">
+                        Playing as <strong style="color:var(--accent-green)">${teamLabel}</strong>
+                        · <span style="color:var(--text-muted)">${t.format}</span>
+                    </div>
+                    <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.2rem">${played} played · ${won}W ${lost}L</div>
+                </div>`;
+            }).join('');
+        }
+
+        // ===== RECENT MATCHES from localStorage =====
+        function renderRecentMatches() {
+            const el = document.getElementById('recentMatchesEl');
+            let matches = [];
+            try { matches = JSON.parse(localStorage.getItem('cmp_recentMatches') || '[]'); } catch(e) {}
+
+            if (!matches.length) {
+                el.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);text-align:center;padding:0.75rem">
+                    No matches yet. <a href="pages/quick-play.html" style="color:var(--accent-green)">Play one →</a>
+                </div>`;
+                return;
+            }
+
+            el.innerHTML = matches.slice(0, 4).map(m => {
+                const won = m.result === 'won';
+                return `<div class="fixture-card" style="margin-bottom:0.4rem">
+                    <div class="fixture-teams">
+                        <div class="fixture-team" style="font-weight:700">${m.userFlag} ${m.userTeam}</div>
+                        <div class="fixture-team" style="color:var(--text-muted);font-size:0.72rem">vs</div>
+                        <div class="fixture-team">${m.oppFlag} ${m.opponent}</div>
+                    </div>
+                    <div class="fixture-info">
+                        <div class="fixture-format">${m.format}</div>
+                        <div style="font-size:0.72rem;font-weight:700;margin-top:0.2rem;color:${won?'var(--accent-green)':'var(--accent-red)'}">${won?'WON':'LOST'}</div>
+                        <div style="font-size:0.65rem;color:var(--text-muted)">${m.date||''}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ===== TIPS =====
+        const TIPS = [
+            'High batting aggression increases boundary chances but also wicket risk.',
+            'Use Economy bowling in powerplay to keep the AI quiet with dot balls.',
+            'Switch to Wicket Hunt bowling in the death overs to take quick wickets.',
+            'AI adjusts its batting aggression based on the required run rate.',
+            'On Hard difficulty, the AI uses situational awareness to outplay you.',
+            'Defensive fielding saves boundaries but reduces caught-behind chances.',
+            'On Easy mode, the simulation slightly favours your batting and bowling.',
+            'A batting aggression of 7+ in death overs can yield big sixes.',
+        ];
+        document.getElementById('tipText').innerHTML = `<strong style="color:var(--accent-green)">Tip:</strong> ${TIPS[Math.floor(Math.random()*TIPS.length)]}`;
+
+        renderActiveTournaments();
+        renderRecentMatches();
+    </script>
+</body>
+</html>
